@@ -47,10 +47,12 @@ volume = str(options.volume)
 
 key_sound_pair = dict()
 dev = DeviceGroup(detect_keyboards())
+honkRegistry = []
+doHonk = False
 while 1:
     event = dev.next_event()
     if event is not None:
-        # print repr(event)
+        print (repr(event))
         if event.type == "EV_KEY" and event.value == 1:
             if event.code.startswith("KEY"):
                 if event.code == "KEY_ENTER":
@@ -62,4 +64,31 @@ while 1:
                         key_sound_pair[event.code] = choice(sounds["click"])
                     filename = getcwd() + '/sounds/' +\
                         key_sound_pair[event.code]
-                PlaySound(filename, volume).start()
+                        
+                if event.code == "KEY_H":
+                    honkRegistry.append("KEY_H")
+                    
+                if event.code == "KEY_O" and honkRegistry == ["KEY_H"]:
+                    honkRegistry.append("KEY_O")
+                    
+                elif event.code == "KEY_O" and honkRegistry != ["KEY_H"]:
+                    honkRegistry = []
+                
+                if event.code == "KEY_N" and honkRegistry == ["KEY_H", "KEY_O"]:
+                    honkRegistry.append("KEY_N")
+                    
+                elif event.code == "KEY_N" and honkRegistry != ["KEY_H", "KEY_O"]:
+                    honkRegistry = []
+                    
+                if event.code == "KEY_K" and honkRegistry == ["KEY_H", "KEY_O", "KEY_N"]:
+                    if doHonk:
+                        doHonk = False
+                        honkRegistry = []
+                    else:
+                        doHonk = True
+                        honkRegistry = []
+                    
+                elif event.code == "KEY_K" and honkRegistry != ["KEY_H", "KEY_O", "KEY_N"]:
+                    honkRegistry = []
+                if(doHonk):    
+                    PlaySound(filename, volume).start()
