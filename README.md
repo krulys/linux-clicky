@@ -1,12 +1,12 @@
-# linux-clicky
+# linux-honky
 
 [![Flattr this git repo](http://api.flattr.com/button/flattr-badge-large.png)](https://flattr.com/submit/auto?user_id=skkeeper&url=https://github.com/skkeeper/linux-clicky&title=linux-clicky&language=&tags=github&category=software)
 
-Inspired by colszowka's [linux-typewritter](https://github.com/colszowka/linux-typewriter) script, linux-clicky produces a sound everytime you press a key on your keyboard. This might be useful for screensharing or a screencast if you want to have some type of feedback while you type.
+Inspired by colszowka's [linux-typewritter](https://github.com/colszowka/linux-typewriter) script, linux-honky produces a sound everytime you press a key on your keyboard. This might be useful for screensharing or a screencast if you want to have some type of feedback while you type.
 
 ## Usage
 
-Run the main.py file and it will automaticly detect your keyboards and start *clickytty click*.
+Run the main.py file and it will automaticly detect your keyboards and start *honkitty honk*.
 
 **Because of the way the script detects the keypresses (by tying itself to the event file in Linux, just like a keylogger would do) it requires root access**
 

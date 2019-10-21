@@ -65,20 +65,14 @@ while 1:
                     filename = getcwd() + '/sounds/' +\
                         key_sound_pair[event.code]
                         
-                if event.code == "KEY_H":
+                if event.code == "KEY_H" and honkRegistry == []:
                     honkRegistry.append("KEY_H")
                     
                 if event.code == "KEY_O" and honkRegistry == ["KEY_H"]:
                     honkRegistry.append("KEY_O")
-                    
-                elif event.code == "KEY_O" and honkRegistry != ["KEY_H"]:
-                    honkRegistry = []
                 
                 if event.code == "KEY_N" and honkRegistry == ["KEY_H", "KEY_O"]:
                     honkRegistry.append("KEY_N")
-                    
-                elif event.code == "KEY_N" and honkRegistry != ["KEY_H", "KEY_O"]:
-                    honkRegistry = []
                     
                 if event.code == "KEY_K" and honkRegistry == ["KEY_H", "KEY_O", "KEY_N"]:
                     if doHonk:
@@ -87,8 +81,9 @@ while 1:
                     else:
                         doHonk = True
                         honkRegistry = []
-                    
-                elif event.code == "KEY_K" and honkRegistry != ["KEY_H", "KEY_O", "KEY_N"]:
+                
+                if event.code != "KEY_H" or event.code != "KEY_O" or event.code != "KEY_N" or event.code != "KEY_K":
                     honkRegistry = []
+                
                 if(doHonk):    
                     PlaySound(filename, volume).start()
