@@ -52,7 +52,6 @@ doHonk = False
 while 1:
     event = dev.next_event()
     if event is not None:
-        print (repr(event))
         if event.type == "EV_KEY" and event.value == 1:
             if event.code.startswith("KEY"):
                 if event.code == "KEY_ENTER":
@@ -82,8 +81,10 @@ while 1:
                         doHonk = True
                         honkRegistry = []
                 
-                if event.code != "KEY_H" or event.code != "KEY_O" or event.code != "KEY_N" or event.code != "KEY_K":
+                if event.code != "KEY_H" and event.code != "KEY_O" and event.code != "KEY_N" and event.code != "KEY_K":
                     honkRegistry = []
                 
                 if(doHonk):    
                     PlaySound(filename, volume).start()
+                print(event.code)
+                print(honkRegistry)
