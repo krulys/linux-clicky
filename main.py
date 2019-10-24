@@ -1,21 +1,17 @@
-#!/usr/bin/env python2
-# -*- Mode: Python; coding: utf-8; indent-tabs-mode: nil; tab-width: 2 -*-
-# Author: Fábio André Damas <skkeeper at gmail dot com>
-
-from os import listdir, getcwd
+#!/usr/bin/env python3
+from pynput import keyboard
+from os import listdir, getcwd, system
 from random import choice
-from third_party.evdev import DeviceGroup
 from linux_clicky.play_sound import PlaySound
-from linux_clicky.detect_keyboards import detect_keyboards
 from optparse import OptionParser
 from signal import signal, SIGINT
 from sys import exit
 
-
 # Handle CTRL+C
 def signal_handler(signal, frame):
-    print '\033[1;32mCTRL + C Detected. Exiting ...'
-    print 'Ignore any errors after this message.\033[1;m'
+    system("stty echo")
+    print ('\033[1;32mCTRL + C Detected. Exiting ...')
+    print ('Ignore any errors after this message.\033[1;m')
     exit(0)
 signal(SIGINT, signal_handler)
 
@@ -30,7 +26,6 @@ parser.add_option(
 parser.set_defaults(volume=1)
 (options, args) = parser.parse_args()
 
-# Get a list of sound files
 sounds = listdir(getcwd() + '/sounds')
 sound_tmp = {}
 sound_tmp["click"] = []
@@ -42,47 +37,57 @@ for sound in sounds:
     else:
         sound_tmp["click"].append(sound)
 sounds = sound_tmp
+
 # Volume: Negative to lower the volume
 volume = str(options.volume)
 
 key_sound_pair = dict()
-dev = DeviceGroup(detect_keyboards())
 honkRegistry = []
 doHonk = False
-while 1:
-    event = dev.next_event()
-    if event is not None:
-        if event.type == "EV_KEY" and event.value == 1:
-            if event.code.startswith("KEY"):
-                if event.code == "KEY_ENTER":
-                    filename = getcwd() + '/sounds/' + sounds["enter"]
-                elif event.code == "KEY_SPACE":
-                    filename = getcwd() + '/sounds/' + sounds["space"]
-                else:
-                    if event.code not in key_sound_pair:
-                        key_sound_pair[event.code] = choice(sounds["click"])
-                    filename = getcwd() + '/sounds/' +\
-                        key_sound_pair[event.code]
-                        
-                if event.code == "KEY_H" and honkRegistry == []:
-                    honkRegistry.append("KEY_H")
-                    
-                if event.code == "KEY_O" and honkRegistry == ["KEY_H"]:
-                    honkRegistry.append("KEY_O")
-                
-                if event.code == "KEY_N" and honkRegistry == ["KEY_H", "KEY_O"]:
-                    honkRegistry.append("KEY_N")
-                    
-                if event.code == "KEY_K" and honkRegistry == ["KEY_H", "KEY_O", "KEY_N"]:
-                    if doHonk:
-                        doHonk = False
-                        honkRegistry = []
-                    else:
-                        doHonk = True
-                        honkRegistry = []
-                
-                if event.code != "KEY_H" and event.code != "KEY_O" and event.code != "KEY_N" and event.code != "KEY_K":
-                    honkRegistry = []
-                
-                if(doHonk):    
-                    PlaySound(filename, volume).start()
+system("clear")
+system("stty -echo")
+def on_press(key):
+    try:
+        global doHonk, honkRegistry,key_sound_pair,volume
+        #Regular keys
+        
+        key_sound_pair[key.char.lower()] = choice(sounds["click"])
+        filename = getcwd() + '/sounds/' +\
+                        key_sound_pair[key.char.lower()]
+        #Detect honk
+        if key.char.lower() == "h" and honkRegistry == []:
+            honkRegistry.append(key.char.lower())
+        
+        elif key.char.lower() == "o" and honkRegistry == ["h"]:
+            honkRegistry.append(key.char.lower())
+            
+        elif key.char.lower() == "n" and honkRegistry == ["h","o"]:
+            honkRegistry.append(key.char.lower())
+        
+        elif key.char.lower() == "k" and honkRegistry == ["h","o","n"]:
+            doHonk = not doHonk
+            honkRegistry.clear()
+        else:
+            honkRegistry.clear()
+        
+        #Do honk
+        if doHonk:
+            PlaySound(filename, volume).start()
+    except AttributeError:
+        #Special Keys
+        
+        if hasattr(key, "enter") and key == key.enter:
+            filename = getcwd() + '/sounds/' + sounds["enter"]
+        else:
+            filename = getcwd() + '/sounds/' + sounds["space"]
+            
+        if doHonk:
+            PlaySound(filename, volume).start()
+        
+
+while True:
+    with keyboard.Listener(
+            on_press=on_press) as listener:
+        listener.join()
+        
+        
