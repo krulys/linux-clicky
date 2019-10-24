@@ -18,5 +18,5 @@ class PlaySound(Thread):
     # TODO: Test if limits the number of clicks
     p.wait()
     if p.returncode != 0:
-      print '\033[1;31mWe found a error with SoX, did you install it?\033[1;m'
+      print ('\033[1;31mWe found a error with SoX, did you install it?\033[1;m')
       p.stderr.read()

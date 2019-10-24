@@ -16,7 +16,3 @@ def detect_keyboards():
       continue
   file_handle.close()
   return keyboards
-
-
-if __name__ == '__main__':
-  print detect_keyboards()
