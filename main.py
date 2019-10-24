@@ -86,5 +86,3 @@ while 1:
                 
                 if(doHonk):    
                     PlaySound(filename, volume).start()
-                print(event.code)
-                print(honkRegistry)
