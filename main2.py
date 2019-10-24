@@ -1,12 +1,20 @@
 #!/usr/bin/env python3
 from pynput import keyboard
-from os import listdir, getcwd
+from os import listdir, getcwd, system
 from random import choice
 from linux_clicky.play_sound import PlaySound
 from linux_clicky.detect_keyboards import detect_keyboards
 from optparse import OptionParser
 from signal import signal, SIGINT
 from sys import exit
+
+# Handle CTRL+C
+def signal_handler(signal, frame):
+    system("stty echo")
+    print ('\033[1;32mCTRL + C Detected. Exiting ...')
+    print ('Ignore any errors after this message.\033[1;m')
+    exit(0)
+signal(SIGINT, signal_handler)
 
 # Handle arguments
 parser = OptionParser()
@@ -37,12 +45,12 @@ volume = str(options.volume)
 key_sound_pair = dict()
 honkRegistry = []
 doHonk = False
-
+system("clear")
+system("stty -echo")
 def on_press(key):
     try:
         global doHonk, honkRegistry,key_sound_pair,volume
         #Regular keys
-        print(f'{key.char} pressed')
         
         key_sound_pair[key.char.lower()] = choice(sounds["click"])
         filename = getcwd() + '/sounds/' +\
@@ -66,11 +74,16 @@ def on_press(key):
         #Do honk
         if doHonk:
             PlaySound(filename, volume).start()
-        print(doHonk)
-        print(honkRegistry)
     except AttributeError:
         #Special Keys
-        print(f'special key {key} pressed')
+        
+        if hasattr(key, "enter") and key == key.enter:
+            filename = getcwd() + '/sounds/' + sounds["enter"]
+        else:
+            filename = getcwd() + '/sounds/' + sounds["space"]
+            
+        if doHonk:
+            PlaySound(filename, volume).start()
         
 
 while True:
